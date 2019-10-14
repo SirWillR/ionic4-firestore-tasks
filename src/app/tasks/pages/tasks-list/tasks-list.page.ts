@@ -23,7 +23,7 @@ export class TasksListPage {
     this.loadTasks();
   }
 
-  private async loadTasks() {
+  private async loadTasks(): Promise<void> {
     const loading = await this.overlayService.loading();
     this.tasks$ = this.tasksService.getAll();
     loading.dismiss();
@@ -31,5 +31,23 @@ export class TasksListPage {
 
   onUpdate(task: Task): void {
     this.navCtrl.navigateForward(['tasks', 'edit', task.id]);
+  }
+
+  async onDelete(task: Task): Promise<void> {
+    await this.overlayService.alert({
+      message: `Do you really want to delete the task "${task.title}"?`,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: async () => {
+            await this.tasksService.delete(task);
+            await this.overlayService.toast({
+              message: `Task "${task.title}" deleted!`
+            });
+          }
+        },
+        'No'
+      ]
+    });
   }
 }
