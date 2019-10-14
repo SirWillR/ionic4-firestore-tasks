@@ -50,4 +50,12 @@ export class TasksListPage {
       ]
     });
   }
+
+  async onDone(task: Task): Promise<void> {
+    const taskToUpdate = { ...task, done: !task.done };
+    await this.tasksService.update(taskToUpdate);
+    await this.overlayService.toast({
+      message: `Task "${task.title}" ${taskToUpdate.done ? 'completed' : 'updated'}!`
+    });
+  }
 }
