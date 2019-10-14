@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Task } from '../../models/task.model';
 import { TasksService } from '../../services/tasks.service';
 import { NavController } from '@ionic/angular';
 import { OverlayService } from 'src/app/core/services/overlay.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tasks-list',
@@ -19,14 +20,10 @@ export class TasksListPage {
     private overlayService: OverlayService
   ) {}
 
-  ionViewDidEnter(): void {
-    this.loadTasks();
-  }
-
-  private async loadTasks(): Promise<void> {
+  async ionViewDidEnter(): Promise<void> {
     const loading = await this.overlayService.loading();
     this.tasks$ = this.tasksService.getAll();
-    loading.dismiss();
+    this.tasks$.pipe(take(1)).subscribe(tasks => loading.dismiss());
   }
 
   onUpdate(task: Task): void {
