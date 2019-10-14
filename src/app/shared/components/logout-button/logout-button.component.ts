@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { NavController } from '@ionic/angular';
+import { NavController, MenuController } from '@ionic/angular';
 import { OverlayService } from 'src/app/core/services/overlay.service';
 
 @Component({
@@ -14,13 +14,20 @@ import { OverlayService } from 'src/app/core/services/overlay.service';
   `
 })
 export class LogoutButtonComponent implements OnInit {
+  @Input() menu: string;
+
   constructor(
     private authService: AuthService,
+    private menuCtrl: MenuController,
     private navCtrl: NavController,
     private overlaySerice: OverlayService
   ) {}
 
-  ngOnInit() {}
+  async ngOnInit(): Promise<void> {
+    if (!(await this.menuCtrl.isEnabled(this.menu))) {
+      this.menuCtrl.enable(true, this.menu);
+    }
+  }
 
   async logout(): Promise<void> {
     await this.overlaySerice.alert({
@@ -30,6 +37,7 @@ export class LogoutButtonComponent implements OnInit {
           text: 'Yes',
           handler: async () => {
             await this.authService.logout();
+            await this.menuCtrl.enable(false, this.menu);
             this.navCtrl.navigateRoot('/login');
           }
         },
