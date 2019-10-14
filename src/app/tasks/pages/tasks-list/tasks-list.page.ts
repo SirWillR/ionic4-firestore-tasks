@@ -19,6 +19,6 @@ export class TasksListPage {
   }
 
   onUpdate(task: Task): void {
-    this.navCtrl.navigateForward(['tasks', 'edit', 'task.id']);
+    this.navCtrl.navigateForward(['tasks', 'edit', task.id]);
   }
 }
